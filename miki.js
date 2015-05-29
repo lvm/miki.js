@@ -1,4 +1,4 @@
-var uiki = {
+var miki = {
     wiki: undefined,
     html: undefined,
     ref: undefined,
@@ -27,39 +27,39 @@ function match_re(where, re, sub, comment){
     return matches;
 }
 
-uiki.init = function(wiki){
-    uiki.wiki = wiki; // HUEUHEHUEUHEHUEHUEHUEHUEHUEUHEUHE
+miki.init = function(wiki){
+    miki.wiki = wiki; // HUEUHEHUEUHEHUEHUEHUEHUEHUEUHEUHE
 }
 
-uiki.process = function() {
-    uiki.html = uiki.wiki.replace("\r\n","\n").split("\n");
-    uiki.ref = [];
+miki.process = function() {
+    miki.html = miki.wiki.replace("\r\n","\n").split("\n");
+    miki.ref = [];
 
     /*
      * BO headers
      * <h{1,2,3,4,5}>
      */
-    uiki.html = replace_re(uiki.html,
+    miki.html = replace_re(miki.html,
                            /={5}(.+)={5}/i,
                            "<h5>$1</h5>",
                            "===== h5 =====");
 
-    uiki.html = replace_re(uiki.html,
+    miki.html = replace_re(miki.html,
                            /={4}(.+)={4}/i,
                            "<h4>$1</h4>",
                            "==== h4 ====");
 
-    uiki.html = replace_re(uiki.html,
+    miki.html = replace_re(miki.html,
                            /={3}(.+)={3}/i,
                            "<h3>$1</h3>",
                            "=== h3 ===");
 
-    uiki.html = replace_re(uiki.html,
+    miki.html = replace_re(miki.html,
                            /={2}(.+)={2}/i,
                            "<h2>$1</h2>",
                            "== h2 ==");
 
-    uiki.html = replace_re(uiki.html,
+    miki.html = replace_re(miki.html,
                            /=(.+)=/i,
                            "<h1>$1</h1>",
                            "= h1 =");
@@ -72,12 +72,12 @@ uiki.process = function() {
      * BO bold & italic
      * <strong> <em>
      */
-    uiki.html = replace_re(uiki.html,
+    miki.html = replace_re(miki.html,
                            /'{3}(.[^']*)'{3}/gi,
                            "<strong>$1</strong>",
                            "'''bold'''");
 
-    uiki.html = replace_re(uiki.html,
+    miki.html = replace_re(miki.html,
                            /'{2}(.[^']*)'{2}/gi,
                            "<em>$1</em>",
                            "''em''");
@@ -92,17 +92,17 @@ uiki.process = function() {
      */
     //match = html.match(/\[{2}(.[^\|\]]*)(\|(.[^\]]*))?\]{2}/gi);
 
-    uiki.html = replace_re(uiki.html,
+    miki.html = replace_re(miki.html,
                            /\[{2}(.[^|\]]+)\]{2}/ig,
                            "<a href='self:$1'>$1</a>",
                            "[[abc]] | [[w:abc]]");
 
-    uiki.html = replace_re(uiki.html,
+    miki.html = replace_re(miki.html,
                            /\[{2}(.[^\]]+)\|(.[^\]]+)\]{2}/gi,  /*/\[{2}(.*)\|(.[^\]]*)\]{2}/i,*/
                            "<a href='$1'>$2</a>",
                            "[[abc|def]]");
 
-    uiki.html = replace_re(uiki.html,
+    miki.html = replace_re(miki.html,
                            /\[(.[^ ]+)(.+)\]/gi,
                            "<a href='$1'>$2</a>",
                            "[abc def]");
@@ -114,7 +114,7 @@ uiki.process = function() {
      * BO lists
      * <ul> <li>
      */
-    uiki.html = replace_re(uiki.html,
+    miki.html = replace_re(miki.html,
                            /^\*(.*)/i,
                            "<li>$1</li>",
                            "* abcdef");
@@ -127,7 +127,7 @@ uiki.process = function() {
      * BO references
      * <ref>
      */
-    uiki.ref = match_re(uiki.html,
+    miki.ref = match_re(miki.html,
                         /<ref>(.*)<\/ref>/i,
                         "$1",
                         "<ref>abc</ref>");
@@ -136,12 +136,12 @@ uiki.process = function() {
     //     console.log(references[i][1]);
     // }
 
-    uiki.html = replace_re(uiki.html,
+    miki.html = replace_re(miki.html,
                            /<ref>(.*)<\/ref>/i,
                            "$1",
                            "<ref>abc</ref>");
 
-    uiki.html = replace_re(uiki.html,
+    miki.html = replace_re(miki.html,
                            /{{listaref}}/i,
                            "___LISTAREF___",
                            "{{listaref}}");
@@ -154,17 +154,17 @@ uiki.process = function() {
      * BO sidetable
      *
      */
-    uiki.html = replace_re(uiki.html,
+    miki.html = replace_re(miki.html,
                            /\|(.+)=(.+)/i,
                            "",
                            "|abc=def");
 
-    uiki.html = replace_re(uiki.html,
+    miki.html = replace_re(miki.html,
                            /{{2}(.*)/i,
                            "",
                            "{{{abc");
 
-    uiki.html = replace_re(uiki.html,
+    miki.html = replace_re(miki.html,
                            /}{2}/i,
                            "",
                            "}}}");
@@ -173,20 +173,20 @@ uiki.process = function() {
      * EO sidetable
      */
 
-    //return uiki.html.join("\n");
+    //return miki.html.join("\n");
 }
 
-uiki.as_html = function(){
-    return uiki.html.join("\n");
+miki.as_html = function(){
+    return miki.html.join("\n");
 }
 
-uiki.listref = function(){
-    return uiki.ref;
+miki.listref = function(){
+    return miki.ref;
 }
 
 
 if (typeof exports === 'object') {
-    for (var i in uiki) {
-        exports[i] = uiki[i];
+    for (var i in miki) {
+        exports[i] = miki[i];
     }
 }
