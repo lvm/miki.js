@@ -27,11 +27,8 @@ function match_re(where, re, sub, comment){
     return matches;
 }
 
-miki.init = function(wiki){
+miki.parse = function(wiki){
     miki.wiki = wiki; // HUEUHEHUEUHEHUEHUEHUEHUEHUEUHEUHE
-}
-
-miki.process = function() {
     miki.html = miki.wiki.replace("\r\n","\n").split("\n");
     miki.ref = [];
 
@@ -114,10 +111,32 @@ miki.process = function() {
      * BO lists
      * <ul> <li>
      */
+
+    miki.html = replace_re(miki.html,
+                           /^:(.*)/i,
+                           "<li>$1</li>",
+                           ": abcdef");
+
+    miki.html = replace_re(miki.html,
+                           /^\*{2}(.*)/i,
+                           "<li>$1</li>",
+                           "** abcdef");
+
     miki.html = replace_re(miki.html,
                            /^\*(.*)/i,
                            "<li>$1</li>",
                            "* abcdef");
+
+    miki.html = miki.html.join("\n");
+    miki.html = replace_re(miki.html,
+                           /\n\n<li>/i,
+                           "\n\n<ul><li>",
+                           "<li>abcdef");
+    miki.html = replace_re(miki.html,
+                           /<\li>\n\n/i,
+                           "</li></ul>\n\n",
+                           "abcdef</li>");
+    miki.html = miki.html.split("\n");
 
     /*
      * EO bold & italic
@@ -172,8 +191,6 @@ miki.process = function() {
     /*
      * EO sidetable
      */
-
-    //return miki.html.join("\n");
 }
 
 miki.as_html = function(){
