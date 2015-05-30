@@ -1,24 +1,45 @@
-var miki = {
-    wiki: undefined,
-    html: undefined,
-    ref: undefined,
-};
+String.prototype.fix_newlines = function(){
+    return this
+        .replace(/<\/?br ?\/?>/gi,"\n")
+        .replace("\r\n","\n");
+}
+
+String.prototype.fix_tabs = function(){
+    return this
+        .replace(/\t/g,"&emsp;")
+}
 
 function replace_re(where, re, sub, comment){
-    for(var i=0;i<where.length;i++){
-        match = where[i].match(re);
-        if(match){
-            //console.log( comment||"", match );
-            where[i] = where[i].replace(re, sub);
+    if( typeof(where) !== "string" ){
+        for(var i=0;i<where.length;i++){
+            match = where[i].match(re);
+            if(match){
+                //console.log( comment||"", match );
+                where[i] = replace_re(where[i], re, sub, comment);
+                //where[i].replace(re, sub);
+            }
         }
+    }
+    else{
+        //console.log( comment||"", sub );
+        where = where.replace(re, sub);
     }
     return where;
 }
 
 function match_re(where, re, sub, comment){
     var matches = [];
-    for(var i=0;i<where.length;i++){
-        match = where[i].match(re);
+    if( typeof(where) !== "string" ){
+        for(var i=0;i<where.length;i++){
+            match = where[i].match(re);
+            if(match){
+                //console.log( comment||"", match );
+                matches.push(match);
+            }
+        }
+    }
+    else{
+        match = where.match(re);
         if(match){
             //console.log( comment||"", match );
             matches.push(match);
@@ -27,9 +48,16 @@ function match_re(where, re, sub, comment){
     return matches;
 }
 
+
+var miki = {
+    wiki: undefined,
+    html: undefined,
+    ref: undefined,
+};
+
 miki.parse = function(wiki){
     miki.wiki = wiki; // HUEUHEHUEUHEHUEHUEHUEHUEHUEUHEUHE
-    miki.html = miki.wiki.replace("\r\n","\n").split("\n");
+    miki.html = miki.wiki.fix_newlines().split("\n");
     miki.ref = [];
 
     /*
@@ -70,12 +98,12 @@ miki.parse = function(wiki){
      * <strong> <em>
      */
     miki.html = replace_re(miki.html,
-                           /'{3}(.[^']*)'{3}/gi,
+                           /'{3}(.[^']+)'{3}/gi,
                            "<strong>$1</strong>",
                            "'''bold'''");
 
     miki.html = replace_re(miki.html,
-                           /'{2}(.[^']*)'{2}/gi,
+                           /'{2}(.[^']+)'{2}/gi,
                            "<em>$1</em>",
                            "''em''");
 
@@ -90,12 +118,17 @@ miki.parse = function(wiki){
     //match = html.match(/\[{2}(.[^\|\]]*)(\|(.[^\]]*))?\]{2}/gi);
 
     miki.html = replace_re(miki.html,
-                           /\[{2}(.[^|\]]+)\]{2}/ig,
-                           "<a href='self:$1'>$1</a>",
+                           /\[{2}((file|archivo))(.+)\]{2}/ig,
+                           "",
+                           "[[file:abc|bla|bla]]");
+
+    miki.html = replace_re(miki.html,
+                           /\[{2}(.[^|\]]*)\]{2}/ig,
+                           "<a href='$1'>$1</a>",
                            "[[abc]] | [[w:abc]]");
 
     miki.html = replace_re(miki.html,
-                           /\[{2}(.[^\]]+)\|(.[^\]]+)\]{2}/gi,  /*/\[{2}(.*)\|(.[^\]]*)\]{2}/i,*/
+                           /\[{2}(.[^\]]+)\|(.[^\]]+)\]{2}/gi,
                            "<a href='$1'>$2</a>",
                            "[[abc|def]]");
 
@@ -111,15 +144,14 @@ miki.parse = function(wiki){
      * BO lists
      * <ul> <li>
      */
-
     miki.html = replace_re(miki.html,
                            /^:(.*)/i,
-                           "<li>$1</li>",
+                           "<li>\t$1</li>",
                            ": abcdef");
 
     miki.html = replace_re(miki.html,
                            /^\*{2}(.*)/i,
-                           "<li>$1</li>",
+                           "<li>\t$1</li>",
                            "** abcdef");
 
     miki.html = replace_re(miki.html,
@@ -129,12 +161,16 @@ miki.parse = function(wiki){
 
     miki.html = miki.html.join("\n");
     miki.html = replace_re(miki.html,
-                           /\n\n<li>/i,
-                           "\n\n<ul><li>",
+                           /[^<\/li>]([\n]+)<li>/gi,
+                           "\n<ul><li>",
                            "<li>abcdef");
     miki.html = replace_re(miki.html,
-                           /<\li>\n\n/i,
-                           "</li></ul>\n\n",
+                           /<\/li>([\n]+)<ul>/gi,
+                           "</li></ul>\n<ul>",
+                           "abcdef</li>");
+    miki.html = replace_re(miki.html,
+                           /<\/li>([\n]+)[^<ul>]/gi,
+                           "</li></ul>\n",
                            "abcdef</li>");
     miki.html = miki.html.split("\n");
 
@@ -150,10 +186,6 @@ miki.parse = function(wiki){
                         /<ref>(.*)<\/ref>/i,
                         "$1",
                         "<ref>abc</ref>");
-
-    // for(var i=0;i<references.length;i++){
-    //     console.log(references[i][1]);
-    // }
 
     miki.html = replace_re(miki.html,
                            /<ref>(.*)<\/ref>/i,
@@ -194,7 +226,7 @@ miki.parse = function(wiki){
 }
 
 miki.as_html = function(){
-    return miki.html.join("\n");
+    return miki.html.join("\n").fix_tabs();
 }
 
 miki.listref = function(){
