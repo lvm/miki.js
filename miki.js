@@ -100,7 +100,7 @@ miki.parse = function(wiki){
                            "[[abc|def]]");
 
     miki.html = replace_re(miki.html,
-                           /\[(.[^ ]+)(.+)\]/gi,
+                           /\[(.*:\/\/[^ ]+)(.+)\]/gi,
                            "<a href='$1'>$2</a>",
                            "[abc def]");
     /*
