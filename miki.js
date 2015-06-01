@@ -179,6 +179,30 @@ miki.parse = function(wiki){
      */
 
     /*
+     * BO sidetable
+     *
+     */
+    miki.html = replace_re(miki.html,
+                           /\|(.+)=(.+)/i,
+                           "",
+                           "|abc=def");
+
+    miki.html = replace_re(miki.html,
+                           /{{2}(.*)/i,
+                           "",
+                           "{{{abc");
+
+    miki.html = replace_re(miki.html,
+                           /}{2}/i,
+                           "",
+                           "}}}");
+
+    /*
+     * EO sidetable
+     */
+
+
+    /*
      * BO references
      * <ref>
      */
@@ -201,28 +225,6 @@ miki.parse = function(wiki){
      * EO references
      */
 
-    /*
-     * BO sidetable
-     *
-     */
-    miki.html = replace_re(miki.html,
-                           /\|(.+)=(.+)/i,
-                           "",
-                           "|abc=def");
-
-    miki.html = replace_re(miki.html,
-                           /{{2}(.*)/i,
-                           "",
-                           "{{{abc");
-
-    miki.html = replace_re(miki.html,
-                           /}{2}/i,
-                           "",
-                           "}}}");
-
-    /*
-     * EO sidetable
-     */
 }
 
 miki.as_html = function(){
