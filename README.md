@@ -8,6 +8,6 @@ BUENO BIENBENIDOS A LA DOCUMENTASION DE ESTA QUE ES UNA BIBLOITECA DE JAVASRITPT
 
     var LOS_ARCHIBVOS = require('fs');
     var SHO = require('./miki.js');
-    var MARADO = fs.readFileSync('marado.wiki').toString();
+    var MARADO = LOS_ARCHIBVOS.readFileSync('marado.wiki').toString();
     SHO.parse(MARADO);
     console.log(SHO.as_html());
