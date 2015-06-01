@@ -1,12 +1,13 @@
 # miki.js
 
-Yet Another MediaWiki Parser in JS. This time using regular expressions.
+![EL RATON DISNEY](HOLA.png)
 
-## usage  
+BUENO BIENBENIDOS A LA DOCUMENTASION DE ESTA QUE ES UNA BIBLOITECA DE JAVASRITPT KE HISE SHO PORQEU QEIURO QUE SE SEPA QUE SHO HISE WIKIPEDIA Y QUIEROI QEU SEPAN BIEN QUE ESTA BIBLITECA TRADUSE DE MEDIA WIKI A PAGINA WEBS  
 
-    var fs = require('fs');
-    var miki = require('./miki.js');
-    var diego_wiki = fs.readFileSync('marado.wiki').toString();
-    var diego = miki;
-    diego.parse(diego_wiki);
-    console.log(diego.as_html());
+## SE USA ASI  
+
+    var LOS_ARCHIBVOS = require('fs');
+    var SHO = require('./miki.js');
+    var MARADO = fs.readFileSync('marado.wiki').toString();
+    SHO.parse(MARADO);
+    console.log(SHO.as_html());
