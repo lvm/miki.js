@@ -72,6 +72,14 @@ function build_listref(where){
     return where;
 }
 
+function prefix_anchors(where, params){
+    for(var i=0;i<params.length;i++){
+        where = replace_re(where, params[i].re, params[i].sub, params[i].re.toString());
+    }
+
+    return where;
+}
+
 var miki = {
     wiki: undefined,
     html: undefined,
@@ -79,36 +87,37 @@ var miki = {
 };
 
 miki.parse = function(wiki){
-    miki.wiki = wiki; // HUEUHEHUEUHEHUEHUEHUEHUEHUEUHEUHE
+    miki.wiki = wiki;
     miki.html = miki.wiki.fix_newlines().split("\n");
     miki.ref = [];
+    //miki.opts = opts || {};
 
     /*
      * BO headers
      * <h{1,2,3,4,5}>
      */
     miki.html = replace_re(miki.html,
-                           /={5}(.+)={5}/i,
+                           /^={5}(.+)={5}/i,
                            "<h5>$1</h5>",
                            "===== h5 =====");
 
     miki.html = replace_re(miki.html,
-                           /={4}(.+)={4}/i,
+                           /^={4}(.+)={4}/i,
                            "<h4>$1</h4>",
                            "==== h4 ====");
 
     miki.html = replace_re(miki.html,
-                           /={3}(.+)={3}/i,
+                           /^={3}(.+)={3}/i,
                            "<h3>$1</h3>",
                            "=== h3 ===");
 
     miki.html = replace_re(miki.html,
-                           /={2}(.+)={2}/i,
+                           /^={2}(.+)={2}/i,
                            "<h2>$1</h2>",
                            "== h2 ==");
 
     miki.html = replace_re(miki.html,
-                           /=(.+)=/i,
+                           /^=(.+)=/i,
                            "<h1>$1</h1>",
                            "= h1 =");
 
@@ -144,6 +153,11 @@ miki.parse = function(wiki){
                            /\[{2}((file|archivo))(.+)\]{2}/ig,
                            "",
                            "[[file:abc|bla|bla]]");
+
+    miki.html = replace_re(miki.html,
+                           /\[{2}((image|imágenes))(.+)\]{2}/ig,
+                           "",
+                           "[[image:abc|bla|bla]]");
 
     miki.html = replace_re(miki.html,
                            /\[{2}(.[^|\]]*)\]{2}/ig,
@@ -211,11 +225,6 @@ miki.parse = function(wiki){
                         "$1",
                         "<ref>abc</ref>");
 
-    // miki.html = replace_re(miki.html,
-    //                        /<ref>(.*)<\/ref>/i,
-    //                        "$&",
-    //                        "<ref>abc</ref>");
-
     miki.html = build_listref(miki.html);
     /*
      * EO references
@@ -246,14 +255,24 @@ miki.parse = function(wiki){
 
 }
 
-miki.as_html = function(){
-    return miki.html.join("\n").fix_tabs();
+miki.as_html = function(opts){
+    var html = miki.html.join("\n").fix_tabs();
+
+    /*
+     * pseudo filters
+     */
+    for( opt in opts ){
+        if( opt == "anchors" ){
+            html = prefix_anchors(html, opts[opt]);
+        }
+    }
+
+    return html;
 }
 
 miki.listref = function(){
     return miki.ref;
 }
-
 
 if (typeof exports === 'object') {
     for (var i in miki) {
