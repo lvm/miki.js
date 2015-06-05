@@ -57,7 +57,7 @@ function build_listref(where){
         if( /_REFHERE_/.test(where[i]) ){
             url = where[i].match(re)[1] || "#";
             where[i] = where[i]
-                .replace(/_REFHERE_/, '<a href="#cite_note-n">[n]</a>'.replace(/n/g,r))
+                .replace(/_REFHERE_/, '<a href="#cite_note-nref">[nref]</a>'.replace(/nref/g,r))
                 .replace(re, "");
             ref.push( '<li id="#cite_note-nref"><a name="#cite_note-nref" href="{url}">[nref]</a></li>'
                       .replace(/nref/g,r).replace("{url}", url) );
